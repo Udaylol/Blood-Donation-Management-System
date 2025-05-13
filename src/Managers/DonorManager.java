@@ -48,7 +48,7 @@ public class DonorManager {
 
     public List<Donor> getAllDonors() {
         List<Donor> sorted = new ArrayList<>(donorList);
-        sorted.sort(Comparator.comparing(d -> d.getName().toLowerCase()));
+        sorted.sort(Comparator.comparing(d -> d.getId()));
         return sorted;
     }
 
@@ -61,7 +61,7 @@ public class DonorManager {
                 eligible.add(d);
             }
         }
-        eligible.sort(Comparator.comparing(d -> d.getName().toLowerCase()));
+        eligible.sort(Comparator.comparing(d -> d.getId()));
         return eligible;
     }
 
@@ -76,7 +76,7 @@ public class DonorManager {
             }
         }
 
-        filtered.sort(Comparator.comparing(d -> d.getName().toLowerCase()));
+        filtered.sort(Comparator.comparing(d -> d.getId()));
         return filtered;
     }
 
@@ -91,7 +91,7 @@ public class DonorManager {
                 }
             }
         }
-        found.sort(Comparator.comparing(d -> d.getName().toLowerCase()));
+        found.sort(Comparator.comparing(d -> d.getId()));
         return found;
     }
 
