@@ -63,9 +63,7 @@ public class DonorTableView extends VBox {
                 @Override
                 protected void updateItem(LocalDate date, boolean empty) {
                     super.updateItem(date, empty);
-                    if (empty || date == null) {
-                        setText("Never");
-                    } else {
+                    if (!empty && date != null) {
                         setText(date.toString());
                     }
                 }

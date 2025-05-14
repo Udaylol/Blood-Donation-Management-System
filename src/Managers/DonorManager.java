@@ -167,6 +167,72 @@ public class DonorManager {
             return false;
         }
     }
+    public boolean updateDonor(int id, String name, int age, String bloodGroup, String city, String contact, LocalDate lastDonationDate) {
+        boolean invalid = false;
+        StringBuilder errorMessage = new StringBuilder();
+
+        // Validate input fields
+        if (!Validation.isValidName(name)) {
+            errorMessage.append("Invalid name. Only letters and spaces allowed (2–50 characters).\n");
+            invalid = true;
+        }
+        if (!Validation.isValidAge(age)) {
+            errorMessage.append("Invalid age. Must be between 18-65 to donate.\n");
+            invalid = true;
+        }
+        if (!Validation.isValidBloodGroup(bloodGroup)) {
+            errorMessage.append("Invalid blood group. Must be A+, A-, B+, B-, AB+, AB-, O+, or O-.\n");
+            invalid = true;
+        }
+        if (!Validation.isValidCity(city)) {
+            errorMessage.append("Invalid city. Only letters and spaces allowed.\n");
+            invalid = true;
+        }
+        if (!Validation.isValidContact(contact)) {
+            errorMessage.append("Invalid contact. Must be a 10-digit number.\n");
+            invalid = true;
+        }
+
+        if (invalid) {
+            showAlert(errorMessage.toString(), AlertType.ERROR);
+            return false;
+        }
+
+        String sql = "UPDATE donors SET name = ?, age = ?, blood_group = ?, city = ?, contact = ?, last_donation_date = ? WHERE id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, name);
+            ps.setInt(2, age);
+            ps.setString(3, bloodGroup);
+            ps.setString(4, city);
+            ps.setString(5, contact);
+
+            if (lastDonationDate != null) {
+                ps.setDate(6, Date.valueOf(lastDonationDate));
+            } else {
+                ps.setNull(6, Types.DATE);
+            }
+
+            ps.setInt(7, id);
+
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected > 0) {
+                showAlert("Donor updated successfully.", AlertType.INFORMATION);
+                loadDonors(); // Refresh donorList and BloodTypeMap
+                return true;
+            } else {
+                showAlert("Donor not found or not updated.", AlertType.WARNING);
+                return false;
+            }
+
+        } catch (SQLException e) {
+            showAlert("Error updating donor: " + e.getMessage(), AlertType.ERROR);
+            return false;
+        }
+    }
+
 
     private void showAlert(String message, AlertType type) {
         Alert alert = new Alert(type);

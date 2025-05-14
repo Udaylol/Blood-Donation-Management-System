@@ -87,6 +87,10 @@ public class DonorDashboard extends BorderPane {
         bloodCompatibilityButton.setMaxWidth(Double.MAX_VALUE);
         bloodCompatibilityButton.setOnAction(e -> showBloodCompatibilityDialog());
 
+        Button updateDonorButton = new Button("Update Donor");
+        updateDonorButton.setMaxWidth(Double.MAX_VALUE);
+        updateDonorButton.setOnAction(e -> showUpdateDonorDialog());
+
         Button deleteDonorButton = new Button("Delete Donor");
         deleteDonorButton.setMaxWidth(Double.MAX_VALUE);
         deleteDonorButton.setOnAction(e -> showDeleteDonorDialog());
@@ -99,6 +103,7 @@ public class DonorDashboard extends BorderPane {
                 searchByCity,
                 searchByBloodGroup,
                 bloodCompatibilityButton,
+                updateDonorButton,
                 deleteDonorButton
         );
 
@@ -222,11 +227,37 @@ public class DonorDashboard extends BorderPane {
             refreshDonorTable();
         }
     }
+    private void showUpdateDonorDialog() {
+        Donor selectedDonor = donorTableView.getSelectedDonor();
+        if (selectedDonor == null) {
+            showAlert("Please select a donor to update", AlertType.WARNING);
+            return;
+        }
+
+        UpdateDonorDialog dialog = new UpdateDonorDialog(mainApp.getPrimaryStage(), selectedDonor);
+        Optional<Donor> result = dialog.showAndWait();
+
+        if (result.isPresent()) {
+            Donor updatedDonor = result.get();
+            donorManager.updateDonor(
+                    updatedDonor.getId(),
+                    updatedDonor.getName(),
+                    updatedDonor.getAge(),
+                    updatedDonor.getBloodGroup(),
+                    updatedDonor.getCity(),
+                    updatedDonor.getContact(),
+                    updatedDonor.getLastDonationDate()
+            );
+            refreshDonorTable();
+        }
+    }
+
 
     private void refreshDonorTable() {
         donorManager.loadDonors();
         donorTableView.setDonors(donorManager.getAllDonors());
     }
+
 
     private void showAlert(String message, AlertType type) {
         Alert alert = new Alert(type);
